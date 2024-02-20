@@ -9,15 +9,13 @@ function generateId(index) {
   return `node_${index}`;
 }
 
-const group = ['red team', 'green team','blue team', 'yello team', 'purple team'];
-
 // Generate 1000 nodes with titles and content
-const nodes = Array.from({ length: 30 }, (_, index) => ({
+const nodes = Array.from({ length: 500 }, (_, index) => ({
   id: generateId(index),
   title: lorem.generateWords(8), // Generating a title with ~8 words
   content: lorem.generateSentences(5), // Generating content with ~5 sentences
   weight: Math.random() * 100,
-  group: group[Math.floor(Math.random() * group.length)]
+  group: Math.floor(Math.random() * 9)
 }));
 
 // Function to randomly select two different nodes for links
@@ -31,7 +29,7 @@ function getRandomNodes(count) {
 }
 
 // Generate 2000 links with titles
-const links = Array.from({ length: 20 }, () => {
+const links = Array.from({ length: 2000 }, () => {
   const [sourceIndex, targetIndex] = getRandomNodes(2);
   return {
     source: generateId(sourceIndex),
