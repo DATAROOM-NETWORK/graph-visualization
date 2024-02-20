@@ -1,51 +1,11 @@
 import * as THREE from './vendor/three.module.js';
 import "./vendor/3d-force-graph.min.js";
 import { CSS2DRenderer, CSS2DObject } from './vendor/CSS2DRenderer.js';
-
-function parseTextToJSON(inputText) {
-  const lines = inputText.trim().split('\n');
-  const nodes = [];
-  const links = [];
-
-  lines.forEach((line) => {
-    const [source, target] = line.match(/\[([^\]]+)\]/g).map((node) => node.slice(1, -1));
-
-    if (!nodes.some((node) => node.id === source)) {
-      nodes.push({ id: source });
-    }
-
-    if (!nodes.some((node) => node.id === target)) {
-      nodes.push({ id: target });
-    }
-
-    links.push({ source, target });
-  });
-
-  return { nodes, links };
-}
+import DataroomElement from './dataroom-element.js'
+import './graph-node.js';
 
 
-
-class ForceGraphComponent extends HTMLElement {
-  connectedCallback() {
-
-    /* Get the CSS Values for styling */
-    const style = window.getComputedStyle(this, null);
-
-    this.backgroundColor = style.backgroundColor;
-    this.foregroundColor = style.color;
-
-    this.width = this.getAttribute('width');
-    if (this.width === null) {
-      this.width = this.parentNode.offsetWidth ;
-    }
-
-    this.height = this.getAttribute('height');
-    if (this.height === null) {
-      this.height = window.innerHeight / 1.3
-    }
-    this.init();
-  }
+class ForceGraphComponent extends DataroomElement {
 
   drawOverlay(node) {
     force_graph_overlay.innerHTML = `
@@ -73,10 +33,40 @@ class ForceGraphComponent extends HTMLElement {
 
   }
 
-  async init() {
+  async initialize() {
 
-    const graph_data = parseTextToJSON(this.innerText);
-    console.log(graph_data);
+    /* Get the CSS Values for styling */
+    const style = window.getComputedStyle(this, null);
+
+    this.backgroundColor = style.backgroundColor;
+    this.foregroundColor = style.color;
+
+    this.width = this.getAttribute('width');
+    if (this.width === null) {
+      this.width = this.parentNode.offsetWidth ;
+    }
+
+    this.height = this.getAttribute('height');
+    if (this.height === null) {
+      this.height = window.innerHeight / 1.3
+    }
+
+    const graph_data = {nodes:[], links:[]};
+    const nodes = [...this.querySelectorAll('graph-node')].map(node => {
+      return {id: node.id}
+    });
+    const links = [...this.querySelectorAll('graph-link')].map(link => {
+      return {
+        source: link.getAttribute('source'),
+        target: link.getAttribute('target')
+      }
+    });
+
+    graph_data.nodes = Object.assign(graph_data.nodes, nodes);
+    graph_data.links = Object.assign(graph_data.links, links);
+
+
+    console.log(graph_data,nodes, links);
 
     this.Graph = ForceGraph3D({ controlType: 'orbit', extraRenderers: [new CSS2DRenderer()] })
       (this)

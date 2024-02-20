@@ -34,13 +34,26 @@
       height: auto;
       margin: auto;
     }
+
+    graph-data {
+      background-color: black;
+      color: white;
+    }
   </style>
 </head>
 <body>
 
  <graph-data>
-   [test]->[another test]
+    <graph-node id="blah"></graph-node>
+    <graph-node id="grrr"></graph-node>
+    <graph-node id="blahblah"></graph-node>
+    <graph-link source="blah" target="grrr"></graph-link>
+    <graph-link source="blahblah" target="grrr"></graph-link>
+
  </graph-data>
+
+
+
 
 </body>
 </html>
