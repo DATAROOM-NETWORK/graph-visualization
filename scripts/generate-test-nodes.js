@@ -15,7 +15,7 @@ const nodes = Array.from({ length: 500 }, (_, index) => ({
   title: lorem.generateWords(8), // Generating a title with ~8 words
   content: lorem.generateSentences(5), // Generating content with ~5 sentences
   weight: Math.random() * 100,
-  group: Math.floor(Math.random() * 9)
+  group: Math.floor(Math.random() * 256)
 }));
 
 // Function to randomly select two different nodes for links
