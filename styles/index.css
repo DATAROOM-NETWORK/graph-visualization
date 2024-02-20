@@ -1,9 +1,11 @@
-@import "./reset.css";
-@import "./variables.css";
+/*
+  graphData
+  graph-data
+*/
 
-body {
-  background-color: var(--bg-color);
-  color: var(--fg-color);
-  font-family: monospace;
-  text-align: center;
+@import "./3d-force-graph.css";
+
+graph-data {
+  display:block;
+  width: 100%;
 }
