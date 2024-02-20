@@ -44,10 +44,15 @@ class ForceGraphComponent extends DataroomElement {
       <ul>${inbound_link_list}</ul>
     `;
 
+    this.overlay.scrollTop = 0;
+
     [...this.overlay.querySelectorAll('.node-link')].forEach(list_item => {
       list_item.addEventListener('click', (e) => {
         const node_id = e.target.getAttribute('node-id');
-        console.log(node_id);
+        const selected_node = this.graph_data.nodes.find(node => {
+          return node.id === node_id;
+        });
+        this.focusOnNode(selected_node);
       })
     })
 
@@ -65,6 +70,8 @@ class ForceGraphComponent extends DataroomElement {
       node, // lookAt ({ x, y, z })
       3000 // ms transition duration
     );
+
+    this.drawOverlay(node);
 
     // [...document.querySelectorAll('.node-label')].forEach(n => {
     //   n.classList.remove('selected');

@@ -8,6 +8,11 @@
 graph-data {
   display:block;
   position: relative;
+
+  .node-link {
+    color: orange;
+    cursor: pointer;
+  }
 }
 
 graph-data .node-label {
@@ -40,3 +45,4 @@ graph-data #force-graph-overlay {
   overflow: scroll;
   background-color: rgba(0,0,0,0.7);
 }
+
