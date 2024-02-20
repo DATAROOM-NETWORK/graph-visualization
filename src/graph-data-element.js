@@ -4,7 +4,6 @@ import { CSS2DRenderer, CSS2DObject } from './vendor/CSS2DRenderer.js';
 import DataroomElement from './dataroom-element.js'
 import './graph-node.js';
 
-
 class ForceGraphComponent extends DataroomElement {
 
   drawOverlay(node) {
@@ -33,6 +32,52 @@ class ForceGraphComponent extends DataroomElement {
 
   }
 
+    // Function to load graph.json and parse it into a JavaScript object
+  async loadJson(filename) {
+    if(filename.length < 1){
+      return {
+        nodes:[],
+        links:[]
+      }
+    }
+      try {
+          const response = await fetch(filename);
+          if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          console.log('Loaded graph.json:', data);
+          return data;
+      } catch (error) {
+          console.error('Could not load graph.json:', error);
+      }
+  }
+
+  renderNodeObject(node){
+    const group = new THREE.Object3D();
+
+    const material = new THREE.MeshPhongMaterial({
+      color: 0xffffff,
+      shininess: 200,
+      opacity: 0.4,
+      transparent: true,
+    });
+
+    const geometry = new THREE.SphereGeometry(2);
+    const cube = new THREE.Mesh(geometry, material);
+    const nodeEl = document.createElement('div');
+    nodeEl.textContent = node.id;
+    nodeEl.className = 'node-label';
+    nodeEl.id = `node-${node.id}`
+    const label = new CSS2DObject(nodeEl);
+    group.add(cube);
+
+    group.add(label);
+
+    return group
+  }
+
+
   async initialize() {
 
     /* Get the CSS Values for styling */
@@ -51,22 +96,20 @@ class ForceGraphComponent extends DataroomElement {
       this.height = window.innerHeight / 1.3
     }
 
-    const graph_data = {nodes:[], links:[]};
-    const nodes = [...this.querySelectorAll('graph-node')].map(node => {
+    const src = this.getAttribute('src');
+    const graph_data = await this.loadJson(src);
+    const markup_nodes = [...this.querySelectorAll('graph-node')].map(node => {
       return {id: node.id}
     });
-    const links = [...this.querySelectorAll('graph-link')].map(link => {
+    const markup_links = [...this.querySelectorAll('graph-link')].map(link => {
       return {
         source: link.getAttribute('source'),
         target: link.getAttribute('target')
       }
     });
 
-    graph_data.nodes = Object.assign(graph_data.nodes, nodes);
-    graph_data.links = Object.assign(graph_data.links, links);
-
-
-    console.log(graph_data,nodes, links);
+    graph_data.nodes = Object.assign(graph_data.nodes, markup_nodes);
+    graph_data.links = Object.assign(graph_data.links, markup_links);
 
     this.Graph = ForceGraph3D({ controlType: 'orbit', extraRenderers: [new CSS2DRenderer()] })
       (this)
@@ -83,27 +126,7 @@ class ForceGraphComponent extends DataroomElement {
       //   return node.size
       // })
       .nodeThreeObject(node => {
-        const group = new THREE.Object3D();
-
-        const material = new THREE.MeshPhongMaterial({
-          color: 0xffffff,
-          shininess: 200,
-          opacity: 0.4,
-          transparent: true,
-        });
-
-        const geometry = new THREE.SphereGeometry(2);
-        const cube = new THREE.Mesh(geometry, material);
-        const nodeEl = document.createElement('div');
-        nodeEl.textContent = node.id;
-        nodeEl.className = 'node-label';
-        nodeEl.id = `node-${node.id}`
-        const label = new CSS2DObject(nodeEl);
-        group.add(cube);
-
-        group.add(label);
-
-        return group
+        return this.renderNodeObject(node);
       })
       // .onNodeHover((node, prevNode) => {
       //   if(prevNode !== null){
