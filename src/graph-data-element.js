@@ -1,15 +1,57 @@
 import * as THREE from './vendor/three.module.js';
 import "./vendor/3d-force-graph.min.js";
 import { CSS2DRenderer, CSS2DObject } from './vendor/CSS2DRenderer.js';
-import DataroomElement from './dataroom-element.js'
-import './graph-node.js';
+import DataroomElement from './dataroom-element.js';
+import { getColor } from './color-palette.js';
 
 class ForceGraphComponent extends DataroomElement {
 
+  findLinks(node){
+    const outbound_links = this.graph_data.links.filter(link => {
+      return link.source.id === node.id
+    });
+
+    const inbound_links = this.graph_data.links.filter(link => {
+      return link.target.id === node.id
+    })
+    return {outbound_links, inbound_links};
+  }
+
   drawOverlay(node) {
-    force_graph_overlay.innerHTML = `
-      <h3>${node.id}</h3>
-    `
+
+    const links = this.findLinks(node);
+    const outbound_link_list = links.outbound_links.map(link => {
+      return `<li class="node-link" node-id="${link.target.id}">
+        ${link.target.title}
+      </li>`
+    }).join('');
+
+    const inbound_link_list = links.inbound_links.map(link => {
+      return `<li class="node-link" node-id="${link.source.id}">
+        ${link.source.title}
+      </li>`
+    }).join('');
+    this.overlay.innerHTML = `
+      <summary>${node.title}</summary>
+      <h3>${node.title}</h3>
+      <p>${node.content}</p>
+      <h4>${node.id}</h4>
+
+      <h3>Outbound Links</h3>
+      <ul>${outbound_link_list}</ul>
+
+      <h3>Inbound Links</h3>
+      <ul>${inbound_link_list}</ul>
+    `;
+
+    [...this.overlay.querySelectorAll('.node-link')].forEach(list_item => {
+      list_item.addEventListener('click', (e) => {
+        const node_id = e.target.getAttribute('node-id');
+        console.log(node_id);
+      })
+    })
+
+    this.overlay.setAttribute('open', true);
   }
 
   focusOnNode(node) {
@@ -57,16 +99,16 @@ class ForceGraphComponent extends DataroomElement {
     const group = new THREE.Object3D();
 
     const material = new THREE.MeshPhongMaterial({
-      color: 0xffffff,
+      color: getColor(node.group),
       shininess: 200,
-      opacity: 0.4,
-      transparent: true,
+      opacity: 0.7,
+      transparent: false,
     });
 
-    const geometry = new THREE.SphereGeometry(2);
+    const geometry = new THREE.SphereGeometry(node.weight / 10);
     const cube = new THREE.Mesh(geometry, material);
     const nodeEl = document.createElement('div');
-    nodeEl.textContent = node.id;
+    nodeEl.textContent = node.title;
     nodeEl.className = 'node-label';
     nodeEl.id = `node-${node.id}`
     const label = new CSS2DObject(nodeEl);
@@ -79,6 +121,7 @@ class ForceGraphComponent extends DataroomElement {
 
 
   async initialize() {
+    this.innerHTML = '<dialog open><h1>Loading...</h1></dialog>'
 
     /* Get the CSS Values for styling */
     const style = window.getComputedStyle(this, null);
@@ -93,23 +136,11 @@ class ForceGraphComponent extends DataroomElement {
 
     this.height = this.getAttribute('height');
     if (this.height === null) {
-      this.height = window.innerHeight / 1.3
+      this.height = this.parentNode.offsetHeight;
     }
 
     const src = this.getAttribute('src');
-    const graph_data = await this.loadJson(src);
-    const markup_nodes = [...this.querySelectorAll('graph-node')].map(node => {
-      return {id: node.id}
-    });
-    const markup_links = [...this.querySelectorAll('graph-link')].map(link => {
-      return {
-        source: link.getAttribute('source'),
-        target: link.getAttribute('target')
-      }
-    });
-
-    graph_data.nodes = Object.assign(graph_data.nodes, markup_nodes);
-    graph_data.links = Object.assign(graph_data.links, markup_links);
+    const graph_data = this.graph_data = await this.loadJson(src);
 
     this.Graph = ForceGraph3D({ controlType: 'orbit', extraRenderers: [new CSS2DRenderer()] })
       (this)
@@ -121,30 +152,28 @@ class ForceGraphComponent extends DataroomElement {
       .linkDirectionalParticles(5)
       .linkWidth(0)
       .graphData(graph_data)
-      // .jsonUrl(this.src)
-      // .nodeVal(node => {
-      //   return node.size
-      // })
       .nodeThreeObject(node => {
         return this.renderNodeObject(node);
       })
-      // .onNodeHover((node, prevNode) => {
-      //   if(prevNode !== null){
-      //     document.querySelector(`#node-${prevNode.id}`).classList.remove('hovered');
-      //   }
+      .onNodeHover((node, prevNode) => {
+        if(prevNode !== null){
+          document.querySelector(`#node-${prevNode.id}`).classList.remove('hovered');
+        }
 
-      //   if(node !== null){
-      //     document.querySelector(`#node-${node.id}`).classList.add('hovered');
-      //   }
-
-      // })
+        if(node !== null){
+          document.querySelector(`#node-${node.id}`).classList.add('hovered');
+        }
+      })
       .cooldownTicks(100)
       .nodeThreeObjectExtend(false)
-      .zoomToFit(10, 10, node => true)
+      .zoomToFit(100, 100, node => true)
       .onNodeClick((node, event) => {
         this.focusOnNode(node);
-        // this.drawOverlay(node);
-      });
+        this.drawOverlay(node);
+      })
+      .linkLabel(link => {
+        return link.title
+      })
 
     let loaded = false;
 
@@ -156,7 +185,9 @@ class ForceGraphComponent extends DataroomElement {
       }
     });
 
-    this.overlay = document.createElement('div');
+    this.overlay = document.createElement('details');
+    this.summary = document.createElement('summary');
+    this.overlay.appendChild(this.summary);
     this.overlay.setAttribute('id', 'force-graph-overlay');
     this.appendChild(this.overlay);
 
