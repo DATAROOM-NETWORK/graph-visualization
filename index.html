@@ -43,10 +43,21 @@
       left:0px;
       top: 0px;
     }
+
+    github-icon {
+      position: fixed;
+      right: 1em;
+      top: 1em;
+      width: 2em;
+      z-index: 1000;
+    }
   </style>
 </head>
 <body>
 
+<script src="https://lnsy-dev.github.io/simple-github-icon/github-icon.min.js"></script>
+
+<github-icon light href="https://github.com/dataroom-network/graph-visualization"></github-icon>
  <graph-data src="./graph.json">
  </graph-data>
 
