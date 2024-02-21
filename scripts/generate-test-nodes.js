@@ -29,7 +29,7 @@ function getRandomNodes(count) {
 }
 
 // Generate 2000 links with titles
-const links = Array.from({ length: 800 }, () => {
+const links = Array.from({ length: 1000 }, () => {
   const [sourceIndex, targetIndex] = getRandomNodes(2);
   return {
     source: generateId(sourceIndex),
