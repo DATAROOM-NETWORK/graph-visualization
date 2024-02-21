@@ -44,7 +44,10 @@ class ForceGraphComponent extends DataroomElement {
       <ul>${inbound_link_list}</ul>
     `;
 
-    this.overlay.scrollTop = 0;
+    this.overlay.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
 
     [...this.overlay.querySelectorAll('.node-link')].forEach(list_item => {
       list_item.addEventListener('click', (e) => {
