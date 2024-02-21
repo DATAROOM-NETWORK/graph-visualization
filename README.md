@@ -1,7 +1,70 @@
 # Graph Data Element
 
 
-This code snippet is a comprehensive example of creating a 3D force-directed graph using several JavaScript libraries and custom components. Here's a breakdown and explanation of its main parts:
+# README for ForceGraphComponent
+
+## Overview
+
+The `ForceGraphComponent` is a custom web component designed to render interactive 3D force-directed graphs using Three.js and 3D Force Graph. It's built to be a versatile, easy-to-integrate component for visualizing and interacting with network data, specifically targeting applications that require dynamic data visualization with a focus on node relationships.
+
+This component allows users to visualize nodes and their connections (links) in a 3D space, with support for custom node rendering, interactive highlighting, and smooth camera transitions to focus on selected nodes. Additionally, it provides an overlay for displaying detailed information about nodes and their inbound/outbound links upon interaction.
+
+## Features
+
+- **3D Force-Directed Graph Visualization**: Utilizes Three.js and 3D Force Graph for rendering.
+- **Custom Node Rendering**: Supports custom rendering of nodes, including color and size based on node attributes.
+- **Interactive Node Selection**: Allows users to click on nodes to focus the camera and display node details.
+- **Dynamic Data Loading**: Capable of loading graph data from a JSON file specified in the `src` attribute.
+- **Styling via CSS**: Supports external CSS for custom styling of nodes and text labels.
+
+
+## Installation
+
+1. **Include Dependencies**: Make sure to include the required JavaScript files (`three.module.js`, `3d-force-graph.min.js`, `CSS2DRenderer.js`, and `color-palette.js`) in your project.
+
+2. **Add the Component**: Copy the `ForceGraphComponent` class code into a JavaScript file in your project, for example, `force-graph-component.js`.
+
+3. **Import the Component**: Import the component script in your HTML file where you wish to use the graph.
+
+    ```html
+    <script type="module" src="./force-graph-component.js"></script>
+    ```
+
+## Usage
+
+1. **Insert the Custom Element**: Place the `graph-data` custom element in your HTML, specifying the source for your graph data in the `src` attribute.
+
+    ```html
+    <html>
+    <head>
+      <link rel="stylesheet" type="text/css" href="https://dataroom-network.github.io/graph-visualization/styles/index.css">
+      <script type="module" src="https://dataroom-network.github.io/graph-visualization/src/index.js"></script>
+    </head>
+    <body>
+    <graph-data src="./graph.json">
+    </graph-data>
+    </body>
+    ```
+
+2. **Styling (Optional)**: Apply custom styles using CSS. The component supports external CSS for styling node labels and the overlay details.
+
+    ```css
+    .node-label {
+        /* Node label styles */
+    }
+    #force-graph-overlay {
+        /* Overlay styles */
+    }
+    ```
+
+3. **Initialization**: The graph automatically initializes and renders once the page is loaded. It fetches the graph data from the specified `src`, processes it, and displays the 3D force-directed graph.
+
+4. **Interaction**: Users can interact with the graph by clicking on nodes to focus and display detailed information about the node, including its inbound and outbound links.
+
+## Customization
+
+To customize node appearance and behavior, modify the `renderNodeObject` method within the `ForceGraphComponent` class. This method defines how nodes are rendered, allowing for customization of shapes, colors, and sizes based on node properties.
+
 
 ### Imports and Dependencies
 - **THREE.js**: Imported from `./vendor/three.module.js`, it's a popular library for creating and displaying animated 3D graphics in a web browser.
