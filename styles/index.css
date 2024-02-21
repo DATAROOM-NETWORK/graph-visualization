@@ -19,6 +19,15 @@ graph-data .node-label {
   display: none;
 }
 
+graph-data > *::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+graph-data > * {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
 graph-data dialog {
   position: fixed;
   left: 50%;
