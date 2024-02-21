@@ -17,6 +17,12 @@ graph-data {
   }
 }
 
+graph-data h1, graph-data h2, graph-data h3 {
+  text-transform: uppercase;
+}
+
+
+
 graph-data .node-label {
   display: none;
 }
@@ -32,19 +38,18 @@ graph-data > * {
 
 graph-data summary {
   font-style: italic;
+  cursor: pointer;
 }
 
 graph-data dialog {
   position: fixed;
-  left: 50%;
+  width: 100%;
   top: 50%;
-  transform: translate(-50%, -50%);
   color: white;
   background-color: transparent;
   border: none;
-
+  text-align: center;
 }
-
 
 graph-data .node-label.hovered {
   display: block;
