@@ -2,15 +2,17 @@
   graphData
   graph-data
 */
-
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import "./3d-force-graph.css";
 
 graph-data {
+  font-family: "Atkinson Hyperlegible", sans-serif;
+
   display:block;
   position: relative;
 
   .node-link {
-    color: orange;
+    color: dodgerblue;
     cursor: pointer;
   }
 }
@@ -26,6 +28,10 @@ graph-data > *::-webkit-scrollbar {
 graph-data > * {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+graph-data summary {
+  font-style: italic;
 }
 
 graph-data dialog {
