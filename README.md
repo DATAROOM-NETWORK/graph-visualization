@@ -34,7 +34,7 @@ This component allows users to visualize nodes and their connections (links) in 
 
 1. **Insert the Custom Element**: Place the `graph-data` custom element in your HTML, specifying the source for your graph data in the `src` attribute.
 
-    ```html
+```html
   <html>
   <head>
       <link rel="stylesheet" type="text/css" href="https://dataroom-network.github.io/graph-visualization/styles/index.css">
@@ -45,7 +45,7 @@ This component allows users to visualize nodes and their connections (links) in 
     </graph-data>
   </body>
   </html>
-    ```
+```
 
 2. **Styling (Optional)**: Apply custom styles using CSS. The component supports external CSS for styling node labels and the overlay details.
 
