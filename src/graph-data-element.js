@@ -22,18 +22,18 @@ class ForceGraphComponent extends DataroomElement {
     const links = this.findLinks(node);
     const outbound_link_list = links.outbound_links.map(link => {
       return `<li class="node-link" node-id="${link.target.id}">
-        ${link.target.title}
+        ${link.target.title ? link.target.title : link.target.id}
       </li>`
     }).join('');
 
     const inbound_link_list = links.inbound_links.map(link => {
       return `<li class="node-link" node-id="${link.source.id}">
-        ${link.source.title}
+        ${link.source.title ? link.source.title : link.source.id}
       </li>`
     }).join('');
     this.overlay.innerHTML = `
-      <summary>${node.title}</summary>
-      <h3>${node.title}</h3>
+      <summary>${node.title ? node.title : node.id}</summary>
+      <h3>${node.title ? node.title : node.id}</h3>
       <p>${node.content}</p>
       <h4>${node.id}</h4>
 
@@ -98,7 +98,6 @@ class ForceGraphComponent extends DataroomElement {
               throw new Error(`HTTP error! status: ${response.status}`);
           }
           const data = await response.json();
-          console.log('Loaded graph.json:', data);
           return data;
       } catch (error) {
           console.error('Could not load graph.json:', error);
@@ -114,6 +113,10 @@ class ForceGraphComponent extends DataroomElement {
       opacity: 0.7,
       transparent: false,
     });
+
+    if(!node.weight){
+      node.weight = 100;
+    }
 
     const geometry = new THREE.SphereGeometry(node.weight / 10);
     const cube = new THREE.Mesh(geometry, material);
@@ -152,6 +155,18 @@ class ForceGraphComponent extends DataroomElement {
     const src = this.getAttribute('src');
     const graph_data = this.graph_data = await this.loadJson(src);
 
+    graph_data.links.forEach(link => {
+      const node = graph_data.nodes.find(node => node.id === link.target)
+
+      if(!node){
+        graph_data.nodes.push({
+          id: link.target,
+          content: `<h1>Not Found</h1><p>Could not find node with id <b>${link.target}</b>`
+        })
+      }
+
+    });
+
     this.Graph = ForceGraph3D({ controlType: 'orbit', extraRenderers: [new CSS2DRenderer()] })
       (this)
       .width(this.width)
@@ -166,12 +181,15 @@ class ForceGraphComponent extends DataroomElement {
         return this.renderNodeObject(node);
       })
       .onNodeHover((node, prevNode) => {
-        if(prevNode !== null){
-          document.querySelector(`#node-${prevNode.id}`).classList.remove('hovered');
-        }
+        try {
+          if(prevNode !== null){
+            document.querySelector(`#node-${prevNode.id}`).classList.remove('hovered');
+          }
 
-        if(node !== null){
-          document.querySelector(`#node-${node.id}`).classList.add('hovered');
+          if(node !== null){
+            document.querySelector(`#node-${node.id}`).classList.add('hovered');
+          }
+        } catch(e){
         }
       })
       .cooldownTicks(100)
