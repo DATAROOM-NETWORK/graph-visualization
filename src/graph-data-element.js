@@ -165,7 +165,7 @@ class ForceGraphComponent extends DataroomElement {
       if(!node){
         graph_data.nodes.push({
           id: link.target,
-          content: `<h1>Not Found</h1><p>Could not find node with id <b>${link.target}</b>`
+          content: `<h1>Not Found</h1><p>Could not find node with id <b>${link.target}</b></p>`
         })
       }
 
