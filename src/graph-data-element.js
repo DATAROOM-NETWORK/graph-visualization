@@ -31,10 +31,14 @@ class ForceGraphComponent extends DataroomElement {
         ${link.source.title ? link.source.title : link.source.id}
       </li>`
     }).join('');
+
+    const content = node.content.replace(/\[\[(.*?)\]\]/g, '<node-link class="node-link" node-id="$1">$1</node-link>');
+
+
     this.overlay.innerHTML = `
       <summary>${node.title ? node.title : node.id}</summary>
       <h3>${node.title ? node.title : node.id}</h3>
-      <p>${node.content}</p>
+      <mark-down>${content}</mark-down>
       <h4>${node.id}</h4>
 
       <h3>Outbound Links</h3>
